@@ -75,4 +75,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(existent);
     }
 
+    @Override
+    public UserModel updateImage(UserRecordDto userRecordDto, UserModel existent) {
+        existent.setImageUrl(userRecordDto.imageUrl());
+        existent.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        return userRepository.save(existent);
+    }
+
 }

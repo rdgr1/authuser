@@ -3,6 +3,7 @@ package com.ead.authuser.services;
 import com.ead.authuser.dtos.UserRecordDto;
 import com.ead.authuser.models.UserModel;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +26,6 @@ public interface UserService {
     UserModel updateUser(UserRecordDto userRecordDto, UserModel existent);
 
     UserModel updatePassword(UserRecordDto userRecordDto, UserModel existent);
+
+    UserModel updateImage(@Valid UserRecordDto userRecordDto, UserModel userModel);
 }
