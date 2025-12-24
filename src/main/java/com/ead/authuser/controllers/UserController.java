@@ -1,7 +1,10 @@
 package com.ead.authuser.controllers;
 
+import com.ead.authuser.dtos.UserRecordDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.impl.UserServiceImpl;
+import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,4 +36,20 @@ public class UserController {
         service.delete(service.findById(userId).get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
     }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateUser (@PathVariable(value = "userId") UUID userId, @RequestBody @Valid @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.updateUser(userRecordDto,service.findById(userId).get()));
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId, @RequestBody @Valid @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
+        var existent = service.findById(userId);
+        if(!existent.get().getPassword().equals(userRecordDto.oldpassword())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
+        }
+        service.updateUser(userRecordDto,existent.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Password updated sucessfully!");
+    }
+
 }
