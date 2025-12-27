@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,22 +39,22 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Object> updateUser (@PathVariable(value = "userId") UUID userId, @RequestBody @Valid @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<Object> updateUser (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.UserPut.class) @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
         return ResponseEntity.status(HttpStatus.OK).body(service.updateUser(userRecordDto,service.findById(userId).get()));
     }
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId, @RequestBody @Valid @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.PasswordPut.class) @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
         var existent = service.findById(userId);
         if(!existent.get().getPassword().equals(userRecordDto.oldpassword())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
         }
-        service.updateUser(userRecordDto,existent.get());
+        service.updatePassword(userRecordDto,existent.get());
         return ResponseEntity.status(HttpStatus.OK).body("Password updated sucessfully!");
     }
 
     @PutMapping("/{userId}/image")
-    public ResponseEntity<Object> updateImage (@PathVariable(value = "userId") UUID userId, @RequestBody @Valid @JsonView(UserRecordDto.UserView.ImagePut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<Object> updateImage (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.ImagePut.class) @JsonView(UserRecordDto.UserView.ImagePut.class) UserRecordDto userRecordDto) {
         return ResponseEntity.status(HttpStatus.OK).body(service.updateImage(userRecordDto, service.findById(userId).get()));
     }
 
