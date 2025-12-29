@@ -4,6 +4,8 @@ import com.ead.authuser.dtos.UserRecordDto;
 import com.ead.authuser.models.UserModel;
 import jakarta.validation.Valid;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,4 +31,6 @@ public interface UserService {
     UserModel updatePassword(UserRecordDto userRecordDto, UserModel existent);
 
     UserModel updateImage(@Valid UserRecordDto userRecordDto, UserModel userModel);
+
+    Page<UserModel> findAll(Pageable pageable);
 }

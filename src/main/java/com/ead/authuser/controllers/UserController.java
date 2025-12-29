@@ -4,7 +4,10 @@ import com.ead.authuser.dtos.UserRecordDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,8 +26,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserModel>> getAllUsers(){
-        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
+    public ResponseEntity<Page<UserModel>> getAllUsers(@PageableDefault(size = 3,sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
+        Page<UserModel> userModelPage = service.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
     @GetMapping("/{userId}")
