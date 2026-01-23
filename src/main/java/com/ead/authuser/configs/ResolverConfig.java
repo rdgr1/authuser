@@ -25,5 +25,4 @@ public class ResolverConfig implements WebMvcConfigurer {
         registry.addMapping("/*/**").allowedOrigins("*");
      }
 
-
 }

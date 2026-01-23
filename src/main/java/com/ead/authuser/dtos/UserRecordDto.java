@@ -42,5 +42,7 @@ public record UserRecordDto(
                 interface UserPut {}
                 interface PasswordPut {}
                 interface ImagePut {}
+
+
         }
 }
