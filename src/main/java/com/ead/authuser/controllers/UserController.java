@@ -5,6 +5,8 @@ import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +26,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/users")
 public class UserController {
     final UserServiceImpl service;
-
+    Logger logger = LogManager.getLogger(UserController.class);
     public UserController(UserServiceImpl service) {
         this.service = service;
     }
@@ -51,19 +53,23 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId){
+        logger.debug("DELETE deleteUser received userId: {}", userId);
         service.delete(service.findById(userId).get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
     }
 
     @PutMapping("/{userId}")
     public ResponseEntity<Object> updateUser (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.UserPut.class) @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
+        logger.debug("PUT updateUser received userId: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(service.updateUser(userRecordDto,service.findById(userId).get()));
     }
 
     @PutMapping("/{userId}/password")
     public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.PasswordPut.class) @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
+        logger.debug("PUT updatePassword received userId: {}", userId);
         var existent = service.findById(userId);
         if(!existent.get().getPassword().equals(userRecordDto.oldpassword())){
+            logger.warn("Error: Mismatched old password! userId: {}", userId);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
         }
         service.updatePassword(userRecordDto,existent.get());
@@ -72,6 +78,7 @@ public class UserController {
 
     @PutMapping("/{userId}/image")
     public ResponseEntity<Object> updateImage (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.ImagePut.class) @JsonView(UserRecordDto.UserView.ImagePut.class) UserRecordDto userRecordDto) {
+        logger.debug("PUT updateImage received userId: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(service.updateImage(userRecordDto, service.findById(userId).get()));
     }
 
