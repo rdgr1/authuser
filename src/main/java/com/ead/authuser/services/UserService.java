@@ -22,8 +22,8 @@ public interface UserService {
 
     UserModel registerUser(UserRecordDto dto);
 
-
     boolean existsByEmail(String email);
+
     boolean existsByUsername(String username);
 
     UserModel updateUser(UserRecordDto userRecordDto, UserModel existent);
@@ -33,4 +33,6 @@ public interface UserService {
     UserModel updateImage(@Valid UserRecordDto userRecordDto, UserModel userModel);
 
     Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable);
+
+    UserModel registerInstructor(UserModel userModel);
 }
