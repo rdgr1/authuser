@@ -32,8 +32,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec, Pageable pageable){
-        Page<UserModel> userModelPage = service.findAll(spec,pageable);
+    public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec, Pageable pageable, @RequestParam(required = false) UUID courseId){
+        Page<UserModel> userModelPage = (courseId != null)
+                ? service.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable)
+                : service.findAll(spec,pageable);
         if (!userModelPage.isEmpty()){
             userModelPage.toList().forEach(
                     userModel -> {
@@ -47,25 +49,25 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<Object> getOneUser(@PathVariable UUID userId){
         return ResponseEntity.status(HttpStatus.OK).body(service.findById(userId).get());
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID userId){
         logger.debug("DELETE deleteUser received userId: {}", userId);
         service.delete(service.findById(userId).get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Object> updateUser (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.UserPut.class) @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<Object> updateUser (@PathVariable UUID userId, @RequestBody @Validated(UserRecordDto.UserView.UserPut.class) @JsonView(UserRecordDto.UserView.UserPut.class) UserRecordDto userRecordDto) {
         logger.debug("PUT updateUser received userId: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(service.updateUser(userRecordDto,service.findById(userId).get()));
     }
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.PasswordPut.class) @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<Object> updatePassword (@PathVariable UUID userId, @RequestBody @Validated(UserRecordDto.UserView.PasswordPut.class) @JsonView(UserRecordDto.UserView.PasswordPut.class) UserRecordDto userRecordDto) {
         logger.debug("PUT updatePassword received userId: {}", userId);
         var existent = service.findById(userId);
         if(!existent.get().getPassword().equals(userRecordDto.oldpassword())){
@@ -77,7 +79,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/image")
-    public ResponseEntity<Object> updateImage (@PathVariable(value = "userId") UUID userId, @RequestBody @Validated(UserRecordDto.UserView.ImagePut.class) @JsonView(UserRecordDto.UserView.ImagePut.class) UserRecordDto userRecordDto) {
+    public ResponseEntity<?> updateImage (@PathVariable UUID userId, @RequestBody @Validated(UserRecordDto.UserView.ImagePut.class) @JsonView(UserRecordDto.UserView.ImagePut.class) UserRecordDto userRecordDto) {
         logger.debug("PUT updateImage received userId: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(service.updateImage(userRecordDto, service.findById(userId).get()));
     }

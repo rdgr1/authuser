@@ -1,10 +1,10 @@
 server:
-  port: 8081
+  port: 8083
   servlet:
     context-path: '/ead-authuser/'
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ead-authuser
+    url: jdbc:postgresql://localhost:5432/ead_authuser
     username: rdgr777
     password: 995647
   jpa:
@@ -16,3 +16,13 @@ spring:
     properties:
       hibernate:
         show_sql:true
+ead:
+  api:
+    url:
+      course: 'http://localhost:8082/ead-course'
+logging:
+  level:
+    com.ead: DEBUG
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: INFO

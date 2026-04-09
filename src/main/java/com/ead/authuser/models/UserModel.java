@@ -3,20 +3,23 @@ package com.ead.authuser.models;
 
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "TB_USERS")
 public class UserModel extends RepresentationModel<UserModel> implements Serializable {
-    private static final long seriaVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,6 +54,22 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     private LocalDateTime creationDate;
     @Column(nullable = false)
     private LocalDateTime lastUpdateDate;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "userModel", fetch = FetchType.LAZY)
+    private Set<UserCourseModel> userCourses;
+
+    public UserCourseModel convertToUserCouserModel(UUID courseId, UserModel userModel){
+        return new UserCourseModel(null,courseId,userModel);
+    };
+
+    public Set<UserCourseModel> getUserCourses() {
+        return userCourses;
+    }
+
+    public void setUserCourses(Set<UserCourseModel> userCourseModel) {
+        this.userCourses = userCourseModel;
+    }
 
     public void setUserId(UUID userId) {
         this.userId = userId;
