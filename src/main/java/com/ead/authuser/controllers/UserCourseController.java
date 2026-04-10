@@ -21,6 +21,7 @@ public class UserCourseController {
     final CourseClient client;
     final UserCourseServiceImpl service;
     final UserServiceImpl userService;
+
     public UserCourseController(CourseClient client, UserCourseServiceImpl service, UserServiceImpl userService) {
         this.client = client;
         this.service = service;
@@ -41,5 +42,14 @@ public class UserCourseController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Subscription already exists.");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveSubscriptionUserInCourse(user.get().convertToUserCouserModel(subscriptionRecordDto.courseId(), user.get())));
+    }
+
+    @DeleteMapping("/users/courses/{courseId}")
+    public ResponseEntity<Object> deleteUserCourseByCourse(@PathVariable UUID courseId){
+        if (!service.existsByCourseId(courseId)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserCourse Not Found!");
+        }
+        service.deleteAllByCourseId(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body("UserCourse deleted successfully!");
     }
 }
