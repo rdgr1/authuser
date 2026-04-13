@@ -69,7 +69,19 @@ public class CourseClient {
                     .toEntity(Boolean.class);
         } catch (RestClientException e){
             logger.error("Error RestClient with cause: {}", e);
-            throw new RuntimeException("Error Request RestClient", e );
+            throw new RuntimeException("Error Request GET RestClient", e );
+        }
+    }
+
+    public void deleteUserCourseInCourse(UUID userId){
+        var uri = baseUrlCourse + "/courses/users/" + userId;
+        try {
+            restClient.delete()
+                    .uri(uri)
+                    .retrieve().toBodilessEntity();
+        } catch (RestClientException e){
+            logger.error("Error RestClient with cause: {}");
+            throw new RuntimeException("Error Request DELETE RestClient", e);
         }
     }
 }

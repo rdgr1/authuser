@@ -30,6 +30,7 @@ public class UserCourseController {
 
     @GetMapping("/users/{userId}/courses/")
     public ResponseEntity<Page<CourseRecordDto>> getAllCoursesByUser(@PageableDefault(sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID userId){
+        userService.findById(userId);
         return ResponseEntity.status(HttpStatus.OK).body(client.getAllCoursesByUser(userId,pageable));
     }
 
