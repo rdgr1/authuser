@@ -2,9 +2,11 @@ package com.ead.authuser.controllers;
 
 import com.ead.authuser.dtos.UserRecordDto;
 import com.ead.authuser.models.UserModel;
+import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.ws.rs.QueryParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -25,9 +27,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    final UserServiceImpl service;
+    final UserService service;
     Logger logger = LogManager.getLogger(UserController.class);
-    public UserController(UserServiceImpl service) {
+    public UserController(UserService service) {
         this.service = service;
     }
 

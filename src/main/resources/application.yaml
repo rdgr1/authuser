@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: '/ead-authuser/'
 spring:
+  application:
+    name: ead-authuser-service
   datasource:
     url: jdbc:postgresql://localhost:5432/ead_authuser
     username: rdgr777
@@ -19,10 +21,18 @@ spring:
 ead:
   api:
     url:
-      course: 'http://localhost:8082/ead-course'
+      course: 'http://ead-course-service/ead-course'
+
 logging:
   level:
     com.ead: DEBUG
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate: INFO
+
+eureka:
+  client:
+    service-url:
+      default-zone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost

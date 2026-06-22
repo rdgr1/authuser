@@ -56,6 +56,7 @@ class UserServiceImplTest {
 
     @Test
     void findById() {
+
         var uuid = UUID.randomUUID();
         var existent = new UserModel();
         existent.setUserId(uuid);
