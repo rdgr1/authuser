@@ -4,11 +4,14 @@ import com.ead.authuser.dtos.CourseRecordDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.exceptions.NotFoundException;
 import com.ead.authuser.models.UserModel;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -32,7 +36,8 @@ public class CourseClient {
         this.restClient = restClient.build();
     }
 
-
+//    @Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+    @CircuitBreaker(name = "circuitbrakerInstance", fallbackMethod = "circuitBreakerFallback")
     public Page<CourseRecordDto> getAllCoursesByUser(UUID userId, Pageable pageable){
          var uri = UriComponentsBuilder.fromHttpUrl(baseUrlCourse + "/courses")
                 .queryParam("userId",userId)
@@ -73,15 +78,15 @@ public class CourseClient {
         }
     }
 
-    public void deleteUserCourseInCourse(UUID userId){
-        var uri = baseUrlCourse + "/courses/users/" + userId;
-        try {
-            restClient.delete()
-                    .uri(uri)
-                    .retrieve().toBodilessEntity();
-        } catch (RestClientException e){
-            logger.error("Error RestClient with cause: {}");
-            throw new RuntimeException("Error Request DELETE RestClient", e);
-        }
+    private Page<CourseRecordDto> retryfallback(UUID userId, Pageable pageable, Throwable t) {
+        logger.error("Inside retry retryFallback, cause - {}", t.toString());
+        var searchResult = new ArrayList<CourseRecordDto>();
+        return new PageImpl<>(searchResult);
+    }
+
+    private Page<CourseRecordDto> circuitBreakerFallback(UUID user, Pageable pageable, Throwable t ){
+        logger.error("Inside retry circuitBreakerFallback, cause - {}", t.toString());
+        var searchResult = new ArrayList<CourseRecordDto>();
+        return new PageImpl<>(searchResult);
     }
 }

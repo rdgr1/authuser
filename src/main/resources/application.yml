@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: '/ead-authuser/'
 spring:
+  application:
+    name: ead-authuser-service
   datasource:
     url: jdbc:postgresql://localhost:5432/ead_authuser
     username: rdgr777
@@ -10,19 +12,53 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      jdbc:
-       lob.non-contextual-creation: true
+    show-sql: true
     properties:
       hibernate:
-        show_sql:true
+        jdbc:
+          lob:
+            non-contextual-creation: true
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    addresses: amqps://ictiazkj:6BhqzfMHhZ0h6GcEnoexdD661m0_MJyR@jackal.rmq.cloudamqp.com/ictiazkj
+
+
 ead:
   api:
     url:
-      course: 'http://localhost:8082/ead-course'
+      course: 'http://ead-course-service/ead-course'
+  broker:
+    exchange:
+      userEvent: ead.userevent
+
 logging:
   level:
     com.ead: DEBUG
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate: INFO
+
+eureka:
+  client:
+    service-url:
+      default-zone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitbrakerInstance:
+        sliding-window-size: 30
+        permitted-number-of-calls-in-half-open-state: 2
+        sliding-window-type: TIME_BASED
+        minimum-number-of-calls: 2
+        wait-duration-in-open-state: 15s
+        failure-rate-threshold: 80
+  retry:
+    instances:
+      retryInstance:
+        max-attempts: 3
+        wait-duration: 5s
